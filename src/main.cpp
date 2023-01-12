@@ -50,6 +50,8 @@ double x_rate[2],y_rate[2];
 double sita1;
 double diff = 0;
 int count = 0;
+int b=0; 
+int b_1=0;
 double drive_PIDx_gain[3] = {9.0,0.0,0};
 double drive_PIDy_gain[3] = {9.0,0.0,0};
 double drive_PIDr_gain[3] = {1.7,0.01,0.5};
@@ -137,22 +139,14 @@ void loop() {
 
 
 ///////////////////////////////////////ここを編集する
-  //example
-  // if(センサーの値)Auto(1);
-  // if(センサーの値)Auto(2);
-  // if(センサーの値)Auto(3); 等々
+//example
+  /*
+  if(センサーの値)b++;
+  Auto(b);
+*/
+
 
   Auto(1);
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -166,10 +160,10 @@ void loop() {
   AutoDrive.to = Point(idou[c][0],idou[c][1],idou[c][2]);
 
   diff = abs(AutoDrive.to.x - AutoDrive.now.x) + abs(AutoDrive.to.y - AutoDrive.now.y);
-  // if(circle_button == 1){
-    if(diff < 3)c++;
-    if(c == count)c=0;
-  // }
+
+    if(b_1 != b)c=0;
+    b_1 = b;
+    if(c != count && diff < 3)c++;
   
 
     AutoDrive.absoluteMove();

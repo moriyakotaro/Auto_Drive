@@ -77,63 +77,7 @@ int Button_switch_min(int num){
     }
 	return flag1;
 }
-void Search(double num){
-    num = (num > 0) ? 1 : (num < 0) ? -1 : 0;
-        // if(num > 0)num = 1;
-        // if(num < 0)num = -1;
-        // if(num == 0)num = 0;
-}
 
-void Pm(double* s, int* p, int* q){
-
-    if(s[0]>0){
-        p[0] = 1;
-        q[0] = 1;
-    }else if(s[0]<0){
-        p[0] = -1;
-        q[0] = -1;
-    }else if(s[0]==0){
-        p[0] = 0;
-        q[0] = 0;
-    }
-
-    if(s[1]>0){
-        p[1] = -1;
-        q[1] = 1;    
-    }else if(s[1]<0){
-        p[1] = 1;
-        q[1] = -1;
-    }else if(s[1]==0){
-        p[1] = 0;
-        q[1] = 0;
-    }
-
-}
-
-void MaxTime(double sita1,double* a){
-
-    if((sita1>=0 && sita1<=PI/2) || (sita1>=-PI || sita1<=-PI*1/2))a[0]=1;
-    else a[0]=0;
-
-    if((sita1>=PI/2 && sita1<=PI) || (sita1>=-PI*1/2 || sita1<=0))a[1]=1;
-    else a[1]=0;
-}
-
-void Rate(double* a, int* p, int* q, double sita){
-    if(a[0] == 1 && a[1] == 0)a[1] = (q[0] - p[0]*tan(sita)) / (p[1]*tan(sita) - q[1]);
-    if(a[0] == 0 && a[1] == 1)a[0] = (p[1]*tan(sita) - q[1]) / (q[0] - p[0]*tan(sita));
-}
-
-void Cir(double* s, double sita1, double sita, double* z){
-    int p[2],q[2];
-    double a[2];
-
-    Pm(s, p, q);
-    MaxTime(sita1,a);
-    Rate(a, p, q, sita);
-    z[0] = a[0];
-    z[1] = a[1];
-}
 
 void Angle(double *angle){
     static double keep[8] = {0};
