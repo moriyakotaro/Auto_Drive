@@ -18,27 +18,21 @@
 #define MOTOR_COUNT 4
 #define MOTOR_CANBUS 0
 #define COMMAND_CANBUS 1
-
 #define CONTROL_CYCLE 1.0 /*ms*/
 #define MOTOR_CYCLE 2.0
-
 #define SMOOTH_SLOW 1
 #define SMOOTH_NORMAL 10
 #define RISING_PWM 0
 #define SMALL_PWM 10
-
 #define ENCODER_X_A 9
 #define ENCODER_X_B 7
 #define ENCODER_Y_A 26
 #define ENCODER_Y_B 27
-
 #define LED1 2
 #define GYAIRO_LED 24
 #define BUTTON 13
 #define BUTTON_PUSH 0
-
 #define IS(x) digitalRead(x) == BUTTON_PUSH
-
 #define GYAIRO_CYCLE 1
 #define ENCODER_CYCLE 1
 #define DISP_CYCLE 10
@@ -56,57 +50,35 @@ double x_rate[2],y_rate[2];
 double sita1;
 double diff = 0;
 int count = 0;
-
 double drive_PIDx_gain[3] = {9.0,0.0,0};
 double drive_PIDy_gain[3] = {9.0,0.0,0};
 double drive_PIDr_gain[3] = {1.7,0.01,0.5};
-
 double M_Pg = 5.342;
 double M_Ig = 4.21;
 double M_Dg = 2.4;
-
 double targets_rpm[4] = {0};//速さ(Hz)
 double gyro_sence;
 double x_val;
 double y_val;
 double x_keep[2];
 double y_keep[2];
-// double lx = 0;
-// double ly = 0;
-// double rx = 0;
-// double lxbf = 0;
-// double lybf = 0;
-// double rxbf = 0;
-// double lxaf = 0;
-// double lyaf = 0;
-// double rxaf = 0;
-
-
 bool rotation_sign;
 int8_t rotation_num=0;
 double rotation_delta=0;
 float rotation_keep[10];
 CAN_message_t sendM;
-
 int data[10] = {0};
 int monitoring = 0; 
-
 uint8_t led_count = 0;
-
-
-
 
 CanControl* drive_can = CanControl::CreateCanControl(MOTOR_CANBUS);
 //CanControl* command_can = CanControl::CreateCanControl(COMMAND_CANBUS);
 Motor motor(MOTOR_COUNT,SMOOTH_SLOW,SMOOTH_NORMAL,RISING_PWM,SMALL_PWM);
 Drive AutoDrive(motor,CONTROL_CYCLE/1000);
 DJIMotor SpdControl(drive_can,CONTROL_CYCLE/1000,MOTOR_COUNT);
-
 Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28, &Wire);
-
 Encoder enc_x(ENCODER_X_A,ENCODER_X_B);
 Encoder enc_y(ENCODER_Y_A,ENCODER_Y_B);
-
 Metro controlTimming(CONTROL_CYCLE);
 Metro motorTimming(MOTOR_CYCLE);
 Metro gyaroTimming(GYAIRO_CYCLE);
@@ -114,15 +86,12 @@ Metro encoderTimming(ENCODER_CYCLE);
 Metro dispTimming(DISP_CYCLE);
 Metro ledTimming(LED_CYCLE);
 Metro Serialtiming = Metro(1);
-Metro idoutiming(4000);///////////
-//変更点
-
+Metro idoutiming(4000);
 
 void pinModeSet();
 void getpalam();
 void getEncorder();
 void printD();
-
 void timer(void);
 void control_data_receive(int recive);
 
@@ -160,11 +129,19 @@ int enc[2] = {};//エンコーダの配列
 
 void loop() {
   int incomingByte;
-
   if (HWSERIAL.available() > 0) {
           incomingByte = HWSERIAL.read();
           control_data_receive(incomingByte);
   }
+
+
+
+///////////////////////////////////////ここを編集する
+  //example
+  // if(センサーの値)Auto(1);
+  // if(センサーの値)Auto(2);
+  // if(センサーの値)Auto(3); 等々
+
   Auto(1);
 
 
@@ -179,36 +156,28 @@ void loop() {
 
 
 
-
+////////////////////////////////////////////////////////
 
   count = Idou(0,damy,idou);
-
   sita1 = gyro_sence-PI/4;
   if(sita1>PI)sita1 = sita1 - 2*PI;
-
   AutoDrive.now.r = gyro_sence;
 	AutoDrive.searchPosition(x_val,y_val,sita1);//gyro_sence+PI/4
-
   AutoDrive.to = Point(idou[c][0],idou[c][1],idou[c][2]);
 
-  
   diff = abs(AutoDrive.to.x - AutoDrive.now.x) + abs(AutoDrive.to.y - AutoDrive.now.y);
-  if(circle_button == 1){
+  // if(circle_button == 1){
     if(diff < 3)c++;
     if(c == count)c=0;
-  }
+  // }
   
 
     AutoDrive.absoluteMove();
     AutoDrive.update();
-
-
     delay(1);//変更点
-  
   for(int i=1;i<=MOTOR_COUNT;i++){
     SpdControl.setTargetRPM(i,AutoDrive.motor[i-1]);
   }
-
   if(NOMAL_DROVE){
     if(NOMAL_MOVE)gyro_sence = 0;
     anomalyDriveing(joystick_lx, -joystick_ly, joystick_rx, AutoDrive.motor, gyro_sence);
